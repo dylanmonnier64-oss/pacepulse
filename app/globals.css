@@ -1,26 +1,236 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300..900;1,14..32,300..900&display=swap');
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@theme {
+  /* Brand colors */
+  --color-app: #0A0A0A;
+  --color-primary: #F4D03F;
+  --color-primary-dark: #D4AC0D;
+  --color-orange-blood: #E67E22;
+  --color-fuchsia-zoom: #9B59B6;
+  --color-forest-dark: #0D1F1A;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Semantic */
+  --color-success: #27AE60;
+  --color-warning: #F39C12;
+  --color-danger: #E74C3C;
+  --color-info: #3498DB;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Text */
+  --color-text-primary: #F5F5F5;
+  --color-text-muted: rgba(245,245,245,0.5);
+
+  /* Glass */
+  --color-glass-bg: rgba(255,255,255,0.05);
+  --color-glass-border: rgba(255,255,255,0.10);
+
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', monospace;
+
+  /* Radius */
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-4xl: 32px;
+
+  /* Animations */
+  --animate-slide-up: slide-up 0.4s ease-out;
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-scale-in: scale-in 0.3s ease-out;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+  --animate-bounce-subtle: bounce-subtle 2s ease-in-out infinite;
+
+  @keyframes slide-up {
+    0% { transform: translateY(20px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  @keyframes fade-in {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes scale-in {
+    0% { transform: scale(0.95); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  @keyframes pulse-glow {
+    0%, 100% { box-shadow: 0 0 20px rgba(244,208,63,0.3); }
+    50% { box-shadow: 0 0 40px rgba(244,208,63,0.6); }
+  }
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+  @keyframes gradient-shift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes confetti-fall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+  }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
   }
 }
 
+/* CSS custom properties for runtime use */
+:root {
+  --app-bg: #0A0A0A;
+  --card-bg: rgba(255,255,255,0.04);
+  --card-border: rgba(255,255,255,0.08);
+  --primary: #F4D03F;
+  --primary-dark: #D4AC0D;
+  --orange: #E67E22;
+  --purple: #9B59B6;
+  --zoom-gradient: linear-gradient(135deg, #E67E22 0%, #C0392B 50%, #9B59B6 100%);
+  --text: #F5F5F5;
+  --text-muted: rgba(245,245,245,0.5);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --tab-bar-height: 72px;
+  --tab-bar-total: calc(var(--tab-bar-height) + var(--safe-bottom));
+}
+
+/* ===== PROFIL "man's" — thème rose ===== */
+[data-profile="mans"] {
+  --primary: #FF6B9D;
+  --primary-dark: #E0507F;
+  --orange: #E040A0;
+  --purple: #C44AFF;
+  --zoom-gradient: linear-gradient(135deg, #FF6B9D 0%, #E040A0 50%, #C44AFF 100%);
+}
+
+/* Custom utilities */
+@utility glass-card {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.10);
+  border-radius: 20px;
+}
+
+@utility zoom-gradient {
+  background: linear-gradient(135deg, #E67E22 0%, #C0392B 40%, #9B59B6 100%);
+}
+
+@utility primary-gradient {
+  background: linear-gradient(135deg, #F4D03F 0%, #E67E22 100%);
+}
+
+@utility glow-primary {
+  box-shadow: 0 0 30px rgba(244,208,63,0.25), 0 0 60px rgba(244,208,63,0.08);
+}
+
+@utility glow-zoom {
+  box-shadow: 0 0 30px rgba(230,126,34,0.25), 0 0 60px rgba(155,89,182,0.1);
+}
+
+@utility stat-num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+@utility touch-feedback {
+  transition: transform 0.1s ease, opacity 0.1s ease;
+  cursor: pointer;
+  &:active {
+    transform: scale(0.97);
+    opacity: 0.85;
+  }
+}
+
+@utility no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+@utility page-content {
+  padding-bottom: calc(var(--tab-bar-total) + 1rem);
+  padding-top: calc(var(--safe-top) + 0.5rem);
+  padding-left: max(1rem, var(--safe-left));
+  padding-right: max(1rem, var(--safe-right));
+}
+
+/* Global resets */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html {
+  height: -webkit-fill-available;
+  overscroll-behavior: none;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--app-bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  font-feature-settings: 'tnum' 1;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  overflow-x: hidden;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::-webkit-scrollbar { width: 0; height: 0; }
+
+/* Input styles (16px prevents iOS zoom) */
+input, textarea, select {
+  font-size: 16px;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+select option {
+  background: #1a1a1a;
+  color: var(--text);
+}
+
+/* Recharts overrides */
+.recharts-cartesian-grid line {
+  stroke: rgba(255,255,255,0.06) !important;
+}
+
+.recharts-text {
+  fill: rgba(245,245,245,0.5) !important;
+  font-size: 11px !important;
+  font-family: -apple-system, system-ui, sans-serif !important;
+}
+
+/* Heatmap cell hover */
+.heatmap-cell {
+  transition: transform 0.2s;
+}
+.heatmap-cell:hover {
+  transform: scale(1.5);
+}
+
+/* Confetti */
+.confetti-piece {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  border-radius: 2px;
+  animation: confetti-fall linear forwards;
+}
+
+/* Progress bar */
+.progress-bar-fill {
+  background: linear-gradient(90deg, #E67E22, #9B59B6);
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
