@@ -69,10 +69,29 @@ self.addEventListener("fetch", (e) => {
 self.addEventListener("push", (e) => {
   if (!e.data) return
   const data = e.data.json()
-  self.registration.showNotification(data.title || "PacePulse", {
-    body: data.body || "",
-    icon: "/icons/icon-192.png",
-    badge: "/icons/icon-192.png",
-    vibrate: [100, 50, 100],
-  })
+  e.waitUntil(
+    self.registration.showNotification(data.title || "PacePulse", {
+      body: data.body || "",
+      icon: "/icons/icon-192.png",
+      badge: "/icons/icon-192.png",
+      vibrate: [100, 50, 100],
+      data: { url: "/health?questionnaire=1" },
+    })
+  )
+})
+
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close()
+  const target = (e.notification.data && e.notification.data.url) || "/health"
+  e.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((list) => {
+      for (const client of list) {
+        if (client.url.includes(self.location.origin) && "focus" in client) {
+          client.focus()
+          return client.navigate(target)
+        }
+      }
+      return clients.openWindow(target)
+    })
+  )
 })

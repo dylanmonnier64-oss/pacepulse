@@ -10,6 +10,22 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // Vomero Pack Lemon — palette verrouillée
+        lemon: {
+          DEFAULT: "#F4D03F",
+          dark:    "#D4AC0D",
+          glow:    "rgba(244,208,63,0.25)",
+        },
+        "fuchsia-vomero": {
+          DEFAULT: "#9B59B6",
+          light:   "#C44AFF",
+          glow:    "rgba(155,89,182,0.25)",
+        },
+        "orange-vomero": {
+          DEFAULT: "#E67E22",
+          deep:    "#C0392B",
+        },
+        anthracite: "#2C3E50",
         app: "#0A0A0A",
         card: "rgba(255,255,255,0.04)",
         border: "rgba(255,255,255,0.08)",

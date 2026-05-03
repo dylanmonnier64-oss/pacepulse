@@ -133,3 +133,26 @@ export function generateId(): string {
 export function clamp(val: number, min: number, max: number): number {
   return Math.min(Math.max(val, min), max)
 }
+
+/**
+ * Shared liquid-glass inline style.
+ * tint = rgba background tint (default near-transparent white).
+ */
+export function lgStyle(tint = "rgba(255,255,255,0.07)"): React.CSSProperties {
+  return {
+    background: tint,
+    backdropFilter:         "blur(22px) saturate(180%) url(#lg)",
+    WebkitBackdropFilter:   "blur(22px) saturate(180%)",
+    border: "1px solid rgba(255,255,255,0.15)",
+    boxShadow: [
+      "0 2px 10px rgba(0,0,0,0.20)",
+      "inset 3px  3px  0.5px -3.5px rgba(255,255,255,0.09)",
+      "inset -3px -3px 0.5px -3.5px rgba(255,255,255,0.82)",
+      "inset 1px  1px  1px   -0.5px rgba(255,255,255,0.55)",
+      "inset -1px -1px 1px   -0.5px rgba(255,255,255,0.55)",
+      "inset 0 0 6px 6px rgba(255,255,255,0.10)",
+      "inset 0 0 2px 2px rgba(255,255,255,0.05)",
+      "0 0 14px rgba(0,0,0,0.18)",
+    ].join(","),
+  }
+}

@@ -2,13 +2,15 @@
 import { use, useMemo } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { ArrowLeft, TrendingUp, Clock, Mountain, Heart, Star, Trash2 } from "lucide-react"
+import { ArrowLeft, TrendingUp, Clock, Mountain, Heart, Star, Trash2, ImageIcon } from "lucide-react"
+import { RaceCardGenerator } from "@/components/race/RaceCardGenerator"
 import { useRuns } from "@/hooks/useRuns"
 import type { Run } from "@/lib/types"
 import {
   formatDistance, formatPace, formatDuration, formatDate,
   getRunTypeLabel, getRunTypeColor, getWeatherIcon
 } from "@/lib/utils"
+import { toast } from "@/lib/toast"
 import GlassCard from "@/components/ui/GlassCard"
 import Badge from "@/components/ui/Badge"
 import {
@@ -84,16 +86,24 @@ export default function RunDetailPage({ params }: { params: Promise<{ id: string
     <motion.div className="flex flex-col gap-4" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }}>
       {/* Back */}
       <div className="flex items-center justify-between">
-        <Link href="/runs" className="touch-feedback w-10 h-10 rounded-2xl flex items-center justify-center"
+        <Link href="/runs" aria-label="Retour à la liste des sorties"
+          className="touch-feedback w-10 h-10 rounded-2xl flex items-center justify-center"
           style={{ background: "rgba(255,255,255,0.06)" }}>
-          <ArrowLeft size={18} />
+          <ArrowLeft size={18} aria-hidden />
         </Link>
         <button
-          onClick={() => { if (confirm("Supprimer ce run ?")) { removeRun(run.id); window.history.back() } }}
+          onClick={() => {
+            if (confirm("Supprimer ce run ?")) {
+              removeRun(run.id)
+              toast.success("Sortie supprimée")
+              window.history.back()
+            }
+          }}
+          aria-label="Supprimer ce run"
           className="touch-feedback w-10 h-10 rounded-2xl flex items-center justify-center"
           style={{ background: "rgba(231,76,60,0.15)", border: "1px solid rgba(231,76,60,0.3)" }}
         >
-          <Trash2 size={16} style={{ color: "#E74C3C" }} />
+          <Trash2 size={16} aria-hidden style={{ color: "#E74C3C" }} />
         </button>
       </div>
 
@@ -181,6 +191,17 @@ export default function RunDetailPage({ params }: { params: Promise<{ id: string
           <p className="text-sm leading-relaxed">{run.notes}</p>
         </GlassCard>
       )}
+
+      {/* Race Card Generator */}
+      <div className="rounded-3xl p-4" style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}>
+        <div className="flex items-center gap-2 mb-3">
+          <ImageIcon size={14} style={{ color: "#F4D03F" }} />
+          <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: "rgba(245,245,245,0.4)" }}>
+            Race Card
+          </p>
+        </div>
+        <RaceCardGenerator run={run} />
+      </div>
 
       <div className="h-4" />
     </motion.div>

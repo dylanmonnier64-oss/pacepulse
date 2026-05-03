@@ -1,0 +1,21 @@
+export const SESSION_MOCK = {
+  label: "Trail Urbain – Mardi Soir",
+  duration: 42,
+  distance: 7.3,
+  tempCelsius: 26,
+  zones: { z1: 10, z2: 20, z3: 30, z4: 30, z5: 10 },
+  dataPoints: [
+    { distance: 0.5, realPace: 330, gradient: 0 },
+    { distance: 1.2, realPace: 315, gradient: 2.5 },
+    { distance: 1.9, realPace: 340, gradient: 5.0 },
+    { distance: 2.7, realPace: 300, gradient: -3.0 },
+    { distance: 3.4, realPace: 310, gradient: 1.0 },
+    { distance: 4.1, realPace: 355, gradient: 6.5 },
+    { distance: 4.8, realPace: 290, gradient: -4.5 },
+    { distance: 5.5, realPace: 320, gradient: 0.5 },
+    { distance: 6.2, realPace: 305, gradient: -1.5 },
+    { distance: 7.3, realPace: 298, gradient: -2.0 },
+  ],
+  paddleStats: { smashs: 0, volees: 0, fautes: 0 },
+  rallyHeartRates: [142, 168, 155, 180, 172, 160, 178, 185],
+}

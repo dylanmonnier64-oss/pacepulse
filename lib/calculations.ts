@@ -177,6 +177,78 @@ export function detectPersonalRecords(runs: Run[]): Record<string, { time: numbe
   return records
 }
 
+// --- VO2max estimation (Daniels/Steffny formula from pace) ---
+export function estimateVO2max(runs: Run[]): number | null {
+  const candidates = runs.filter(r => r.distance >= 3 && r.pace > 0 && r.feeling >= 5)
+  if (!candidates.length) return null
+  // Use best (fastest) pace run — VO2max ≈ (speed in m/min / 26.8) × 100 adjusted by effort
+  const best = [...candidates].sort((a, b) => a.pace - b.pace)[0]
+  const speedMMin = (1000 / best.pace)      // m/min
+  // Simplified: VO2 = -4.60 + 0.182258 * speed + 0.000104 * speed²
+  const vo2 = -4.60 + 0.182258 * speedMMin + 0.000104 * speedMMin * speedMMin
+  // Effort correction (feeling 5-10 → 85%-100% intensity)
+  const effortFactor = 0.85 + (best.feeling - 5) * 0.03
+  return Math.min(90, Math.max(25, Math.round((vo2 / effortFactor) * 10) / 10))
+}
+
+// --- Injury risk score (0-100) based on training load spikes ---
+export function calculateInjuryRisk(runs: Run[]): { score: number; label: string; color: string; reason: string } {
+  if (runs.length < 4) return { score: 0, label: "Insuffisant", color: "#3498DB", reason: "Pas assez de données." }
+
+  const now = new Date()
+  const week = (offset: number) => {
+    const s = new Date(now); s.setDate(s.getDate() - offset * 7)
+    const e = new Date(now); e.setDate(e.getDate() - (offset - 1) * 7)
+    return runs.filter(r => { const d = new Date(r.date); return d >= s && d < e })
+  }
+
+  const thisWeekKm = week(1).reduce((s, r) => s + r.distance, 0)
+  const prevWeekKm = week(2).reduce((s, r) => s + r.distance, 0)
+  const prev3AvgKm = (week(2).reduce((s,r)=>s+r.distance,0) + week(3).reduce((s,r)=>s+r.distance,0) + week(4).reduce((s,r)=>s+r.distance,0)) / 3
+
+  // ACWR (Acute:Chronic Workload Ratio) — ideal 0.8-1.3
+  const acwr = prev3AvgKm > 0 ? thisWeekKm / prev3AvgKm : 1
+  let score = 0
+  if (acwr > 1.5) score = 85
+  else if (acwr > 1.3) score = 55
+  else if (acwr > 0.8) score = 15
+  else score = 25 // undertraining also risk
+
+  // Add risk for consecutive hard sessions
+  const last5 = runs.slice(0, 5)
+  const hardSessions = last5.filter(r => r.type === "threshold" || r.type === "interval").length
+  if (hardSessions >= 3) score = Math.min(95, score + 20)
+
+  const label = score >= 70 ? "Élevé" : score >= 40 ? "Modéré" : "Faible"
+  const color = score >= 70 ? "#E74C3C" : score >= 40 ? "#E67E22" : "#27AE60"
+  const reason = acwr > 1.3
+    ? `Charge +${Math.round((acwr - 1) * 100)}% vs semaines précédentes`
+    : hardSessions >= 3 ? "3 séances intenses en 5 runs"
+    : "Charge d'entraînement équilibrée"
+
+  return { score, label, color, reason }
+}
+
+// --- GAP (Grade Adjusted Pace) ---
+// Adjusts pace based on elevation gain/loss. Positive elevation makes it harder.
+// Based on Jack Daniels' formula approximation.
+export function calculateGAP(paceSecPerKm: number, elevationGainM: number, distanceKm: number): number {
+  if (distanceKm <= 0 || paceSecPerKm <= 0) return paceSecPerKm
+  const gradePercent = (elevationGainM / (distanceKm * 1000)) * 100
+  // Correction factor per 1% grade (approx): +7.5 sec/km per +1% grade
+  const correctionPerGrade = 7.5
+  const correctedPace = paceSecPerKm - (gradePercent * correctionPerGrade)
+  return Math.max(120, Math.round(correctedPace))
+}
+
+// Format GAP for display (same as pace format: "4:35")
+export function formatGAP(paceSecPerKm: number, elevationGainM: number, distanceKm: number): string {
+  const gap = calculateGAP(paceSecPerKm, elevationGainM, distanceKm)
+  const mins = Math.floor(gap / 60)
+  const secs = gap % 60
+  return `${mins}:${String(secs).padStart(2, "0")}`
+}
+
 // --- Streak ---
 export function calculateStreak(runs: Run[]): number {
   if (!runs.length) return 0

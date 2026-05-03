@@ -1,0 +1,557 @@
+[
+  {
+    "id": "route-001",
+    "name": "Boucle des Quais au Crépuscule",
+    "distance_km": 8,
+    "elevation_gain_m": 15,
+    "terrain_type": "quais",
+    "surface": "goudron",
+    "difficulty": "débutant",
+    "loop": true,
+    "start_coordinates": [
+      -0.57,
+      44.835
+    ],
+    "points_of_interest": [
+      "Miroir d'eau",
+      "Place de la Bourse",
+      "Pont de Pierre"
+    ],
+    "scenic_score": 9,
+    "sunset_score": 10,
+    "sunrise_score": 7,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Quais Garonne"
+    ],
+    "geojson_path": "/data/geojson/route-001.json"
+  },
+  {
+    "id": "route-002",
+    "name": "Grands Quais Nord-Sud",
+    "distance_km": 12,
+    "elevation_gain_m": 20,
+    "terrain_type": "quais",
+    "surface": "goudron",
+    "difficulty": "intermédiaire",
+    "loop": false,
+    "start_coordinates": [
+      -0.568,
+      44.85
+    ],
+    "points_of_interest": [
+      "Chartrons",
+      "Pont Jacques-Chaban-Delmas",
+      "Cité du Vin"
+    ],
+    "scenic_score": 8,
+    "sunset_score": 9,
+    "sunrise_score": 8,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Quais Garonne",
+      "Chartrons"
+    ],
+    "geojson_path": "/data/geojson/route-002.json"
+  },
+  {
+    "id": "route-003",
+    "name": "Spirale du Parc Bordelais",
+    "distance_km": 5,
+    "elevation_gain_m": 30,
+    "terrain_type": "parc",
+    "surface": "chemin terre",
+    "difficulty": "débutant",
+    "loop": true,
+    "start_coordinates": [
+      -0.607,
+      44.847
+    ],
+    "points_of_interest": [
+      "Roserie du Parc",
+      "Lac du Parc",
+      "Allée principale"
+    ],
+    "scenic_score": 7,
+    "sunset_score": 6,
+    "sunrise_score": 8,
+    "wet_weather_compatible": false,
+    "zones": [
+      "Parc Bordelais"
+    ],
+    "geojson_path": "/data/geojson/route-003.json"
+  },
+  {
+    "id": "route-004",
+    "name": "Trail des Sous-Bois",
+    "distance_km": 7,
+    "elevation_gain_m": 55,
+    "terrain_type": "trail",
+    "surface": "terre",
+    "difficulty": "intermédiaire",
+    "loop": true,
+    "start_coordinates": [
+      -0.61,
+      44.845
+    ],
+    "points_of_interest": [
+      "Clairière Nord",
+      "Ruisseau du Parc"
+    ],
+    "scenic_score": 7,
+    "sunset_score": 5,
+    "sunrise_score": 9,
+    "wet_weather_compatible": false,
+    "zones": [
+      "Parc Bordelais"
+    ],
+    "geojson_path": "/data/geojson/route-004.json"
+  },
+  {
+    "id": "route-005",
+    "name": "Tour du Lac de Bordeaux",
+    "distance_km": 9,
+    "elevation_gain_m": 10,
+    "terrain_type": "lac",
+    "surface": "goudron",
+    "difficulty": "débutant",
+    "loop": true,
+    "start_coordinates": [
+      -0.614,
+      44.873
+    ],
+    "points_of_interest": [
+      "Plage du Lac",
+      "Base nautique",
+      "Parc des Expositions"
+    ],
+    "scenic_score": 8,
+    "sunset_score": 9,
+    "sunrise_score": 8,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Lac de Bordeaux"
+    ],
+    "geojson_path": "/data/geojson/route-005.json"
+  },
+  {
+    "id": "route-006",
+    "name": "Grand Tour Lac & Forêt",
+    "distance_km": 15,
+    "elevation_gain_m": 25,
+    "terrain_type": "lac",
+    "surface": "mixte",
+    "difficulty": "intermédiaire",
+    "loop": true,
+    "start_coordinates": [
+      -0.614,
+      44.875
+    ],
+    "points_of_interest": [
+      "Plage du Lac",
+      "Bois de Bordeaux",
+      "Stade Nautique"
+    ],
+    "scenic_score": 8,
+    "sunset_score": 8,
+    "sunrise_score": 9,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Lac de Bordeaux"
+    ],
+    "geojson_path": "/data/geojson/route-006.json"
+  },
+  {
+    "id": "route-007",
+    "name": "Bastide Créative",
+    "distance_km": 6,
+    "elevation_gain_m": 18,
+    "terrain_type": "urbain",
+    "surface": "goudron",
+    "difficulty": "débutant",
+    "loop": true,
+    "start_coordinates": [
+      -0.548,
+      44.843
+    ],
+    "points_of_interest": [
+      "Darwin Ecosystème",
+      "Jardin Botanique",
+      "Pont de Pierre"
+    ],
+    "scenic_score": 7,
+    "sunset_score": 7,
+    "sunrise_score": 8,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Darwin",
+      "Bastide"
+    ],
+    "geojson_path": "/data/geojson/route-007.json"
+  },
+  {
+    "id": "route-008",
+    "name": "Bastide à Bouliac Aller-Retour",
+    "distance_km": 18,
+    "elevation_gain_m": 120,
+    "terrain_type": "mixte",
+    "surface": "mixte",
+    "difficulty": "avancé",
+    "loop": false,
+    "start_coordinates": [
+      -0.548,
+      44.843
+    ],
+    "points_of_interest": [
+      "Darwin Ecosystème",
+      "Côteaux de Bouliac",
+      "Point de vue Garonne"
+    ],
+    "scenic_score": 9,
+    "sunset_score": 9,
+    "sunrise_score": 7,
+    "wet_weather_compatible": false,
+    "zones": [
+      "Darwin",
+      "Bastide",
+      "Bouliac"
+    ],
+    "geojson_path": "/data/geojson/route-008.json"
+  },
+  {
+    "id": "route-009",
+    "name": "Coteaux de Bouliac",
+    "distance_km": 10,
+    "elevation_gain_m": 145,
+    "terrain_type": "trail",
+    "surface": "terre",
+    "difficulty": "avancé",
+    "loop": true,
+    "start_coordinates": [
+      -0.513,
+      44.796
+    ],
+    "points_of_interest": [
+      "Belvédère de Bouliac",
+      "Vignobles de Bouliac",
+      "Chapelle"
+    ],
+    "scenic_score": 10,
+    "sunset_score": 10,
+    "sunrise_score": 9,
+    "wet_weather_compatible": false,
+    "zones": [
+      "Bouliac"
+    ],
+    "geojson_path": "/data/geojson/route-009.json"
+  },
+  {
+    "id": "route-010",
+    "name": "Sentier des Vignes",
+    "distance_km": 4,
+    "elevation_gain_m": 80,
+    "terrain_type": "trail",
+    "surface": "terre",
+    "difficulty": "intermédiaire",
+    "loop": true,
+    "start_coordinates": [
+      -0.514,
+      44.797
+    ],
+    "points_of_interest": [
+      "Vignes de Bouliac",
+      "Belvédère"
+    ],
+    "scenic_score": 9,
+    "sunset_score": 10,
+    "sunrise_score": 8,
+    "wet_weather_compatible": false,
+    "zones": [
+      "Bouliac"
+    ],
+    "geojson_path": "/data/geojson/route-010.json"
+  },
+  {
+    "id": "route-011",
+    "name": "Boucle Mérignac Soleil",
+    "distance_km": 11,
+    "elevation_gain_m": 35,
+    "terrain_type": "urbain",
+    "surface": "goudron",
+    "difficulty": "intermédiaire",
+    "loop": true,
+    "start_coordinates": [
+      -0.644,
+      44.84
+    ],
+    "points_of_interest": [
+      "Étang de l'Alouette",
+      "Parc de Mussonville",
+      "Allée de Boutaut"
+    ],
+    "scenic_score": 6,
+    "sunset_score": 6,
+    "sunrise_score": 7,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Mérignac"
+    ],
+    "geojson_path": "/data/geojson/route-011.json"
+  },
+  {
+    "id": "route-012",
+    "name": "Marathon Mérignac-Bordeaux",
+    "distance_km": 22,
+    "elevation_gain_m": 60,
+    "terrain_type": "urbain",
+    "surface": "goudron",
+    "difficulty": "avancé",
+    "loop": false,
+    "start_coordinates": [
+      -0.644,
+      44.84
+    ],
+    "points_of_interest": [
+      "Mérignac",
+      "Caudéran",
+      "Parc Bordelais",
+      "Quais"
+    ],
+    "scenic_score": 6,
+    "sunset_score": 7,
+    "sunrise_score": 6,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Mérignac",
+      "Parc Bordelais",
+      "Quais Garonne"
+    ],
+    "geojson_path": "/data/geojson/route-012.json"
+  },
+  {
+    "id": "route-013",
+    "name": "Forêt de Pessac",
+    "distance_km": 13,
+    "elevation_gain_m": 50,
+    "terrain_type": "trail",
+    "surface": "terre",
+    "difficulty": "intermédiaire",
+    "loop": true,
+    "start_coordinates": [
+      -0.63,
+      44.808
+    ],
+    "points_of_interest": [
+      "Forêt de Pessac",
+      "Lac de Beauséjour",
+      "Domaine Universitaire"
+    ],
+    "scenic_score": 7,
+    "sunset_score": 6,
+    "sunrise_score": 8,
+    "wet_weather_compatible": false,
+    "zones": [
+      "Pessac"
+    ],
+    "geojson_path": "/data/geojson/route-013.json"
+  },
+  {
+    "id": "route-014",
+    "name": "Boucle du Campus",
+    "distance_km": 5,
+    "elevation_gain_m": 20,
+    "terrain_type": "parc",
+    "surface": "mixte",
+    "difficulty": "débutant",
+    "loop": true,
+    "start_coordinates": [
+      -0.629,
+      44.809
+    ],
+    "points_of_interest": [
+      "Campus Talence",
+      "ENSAM",
+      "Parc paysager"
+    ],
+    "scenic_score": 5,
+    "sunset_score": 5,
+    "sunrise_score": 6,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Pessac"
+    ],
+    "geojson_path": "/data/geojson/route-014.json"
+  },
+  {
+    "id": "route-015",
+    "name": "Chartrons & Bacalan Riverside",
+    "distance_km": 8,
+    "elevation_gain_m": 12,
+    "terrain_type": "quais",
+    "surface": "goudron",
+    "difficulty": "débutant",
+    "loop": true,
+    "start_coordinates": [
+      -0.572,
+      44.849
+    ],
+    "points_of_interest": [
+      "Marché des Chartrons",
+      "Hangar 14",
+      "Cité du Vin"
+    ],
+    "scenic_score": 8,
+    "sunset_score": 9,
+    "sunrise_score": 7,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Chartrons"
+    ],
+    "geojson_path": "/data/geojson/route-015.json"
+  },
+  {
+    "id": "route-016",
+    "name": "Chartrons à Lormont",
+    "distance_km": 16,
+    "elevation_gain_m": 40,
+    "terrain_type": "mixte",
+    "surface": "mixte",
+    "difficulty": "intermédiaire",
+    "loop": false,
+    "start_coordinates": [
+      -0.572,
+      44.849
+    ],
+    "points_of_interest": [
+      "Chartrons",
+      "Pont Chaban-Delmas",
+      "Lormont",
+      "Belvédère"
+    ],
+    "scenic_score": 8,
+    "sunset_score": 8,
+    "sunrise_score": 8,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Chartrons",
+      "Bastide"
+    ],
+    "geojson_path": "/data/geojson/route-016.json"
+  },
+  {
+    "id": "route-017",
+    "name": "Saint-Michel & Victoire",
+    "distance_km": 6,
+    "elevation_gain_m": 10,
+    "terrain_type": "urbain",
+    "surface": "goudron",
+    "difficulty": "débutant",
+    "loop": true,
+    "start_coordinates": [
+      -0.568,
+      44.83
+    ],
+    "points_of_interest": [
+      "Basilique Saint-Michel",
+      "Cours Victor Hugo",
+      "Place de la Victoire"
+    ],
+    "scenic_score": 7,
+    "sunset_score": 7,
+    "sunrise_score": 6,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Saint-Michel"
+    ],
+    "geojson_path": "/data/geojson/route-017.json"
+  },
+  {
+    "id": "route-018",
+    "name": "Traversée des Lumières",
+    "distance_km": 9,
+    "elevation_gain_m": 15,
+    "terrain_type": "urbain",
+    "surface": "goudron",
+    "difficulty": "débutant",
+    "loop": false,
+    "start_coordinates": [
+      -0.568,
+      44.83
+    ],
+    "points_of_interest": [
+      "Basilique Saint-Michel",
+      "Quais",
+      "Pont de Pierre",
+      "Place Pey Berland"
+    ],
+    "scenic_score": 9,
+    "sunset_score": 10,
+    "sunrise_score": 8,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Saint-Michel",
+      "Quais Garonne"
+    ],
+    "geojson_path": "/data/geojson/route-018.json"
+  },
+  {
+    "id": "route-019",
+    "name": "Caudéran & Parc en Boucle",
+    "distance_km": 10,
+    "elevation_gain_m": 35,
+    "terrain_type": "mixte",
+    "surface": "mixte",
+    "difficulty": "intermédiaire",
+    "loop": true,
+    "start_coordinates": [
+      -0.608,
+      44.846
+    ],
+    "points_of_interest": [
+      "Caudéran",
+      "Parc Bordelais",
+      "Square du Docteur Schweitzer"
+    ],
+    "scenic_score": 6,
+    "sunset_score": 6,
+    "sunrise_score": 7,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Parc Bordelais"
+    ],
+    "geojson_path": "/data/geojson/route-019.json"
+  },
+  {
+    "id": "route-020",
+    "name": "Grand Tour de Bordeaux",
+    "distance_km": 20,
+    "elevation_gain_m": 85,
+    "terrain_type": "urbain",
+    "surface": "goudron",
+    "difficulty": "avancé",
+    "loop": true,
+    "start_coordinates": [
+      -0.57,
+      44.835
+    ],
+    "points_of_interest": [
+      "Quais",
+      "Chartrons",
+      "Parc Bordelais",
+      "Caudéran",
+      "Pessac",
+      "Saint-Michel"
+    ],
+    "scenic_score": 9,
+    "sunset_score": 8,
+    "sunrise_score": 8,
+    "wet_weather_compatible": true,
+    "zones": [
+      "Quais Garonne",
+      "Chartrons",
+      "Parc Bordelais",
+      "Saint-Michel"
+    ],
+    "geojson_path": "/data/geojson/route-020.json"
+  }
+]

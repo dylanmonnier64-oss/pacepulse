@@ -1,7 +1,7 @@
 "use client"
 import { motion } from "framer-motion"
 import {
-  ComposedChart, Bar, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell
+  ComposedChart, Bar, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, Cell, ReferenceLine
 } from "recharts"
 import type { Run } from "@/lib/types"
 import { getWeeklyLoads } from "@/lib/calculations"
@@ -29,6 +29,12 @@ export default function WeeklyLoad({ runs }: { runs: Run[] }) {
   })
 
   const displayData = data.map((d, i) => ({ ...d, avg: Math.round(avgDistances[i] * 10) / 10 }))
+
+  // Current week cursor: Monday=0, Sunday=6 → progress 1/7 to 7/7
+  const todayDay = new Date().getDay()
+  const mondayBased = todayDay === 0 ? 6 : todayDay - 1
+  const weekProgress = (mondayBased + 1) / 7
+  const currentWeekLabel = displayData[displayData.length - 1]?.week
 
   return (
     <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
@@ -70,6 +76,19 @@ export default function WeeklyLoad({ runs }: { runs: Run[] }) {
                 border: "1px solid rgba(255,255,255,0.12)",
                 borderRadius: 12,
                 fontSize: 11,
+              }}
+            />
+            <ReferenceLine
+              x={currentWeekLabel}
+              stroke="#F4D03F"
+              strokeWidth={2}
+              strokeDasharray="4 3"
+              label={{
+                value: `${["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"][mondayBased]} · ${Math.round(weekProgress * 100)}%`,
+                position: "top",
+                fill: "#F4D03F",
+                fontSize: 9,
+                fontWeight: "bold",
               }}
             />
             <Bar dataKey="distance" radius={[4, 4, 2, 2]}>

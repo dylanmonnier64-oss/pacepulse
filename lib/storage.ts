@@ -1,4 +1,4 @@
-import type { Run, Gear, Goal, UserProfile } from "./types"
+import type { Run, Gear, Goal, UserProfile, PadelSession } from "./types"
 
 export type ProfileId = "dydz" | "mans"
 
@@ -63,6 +63,25 @@ export function saveAllRuns(runs: Run[]): void {
 
 export function deleteRun(id: string): void {
   set("runs", getRuns().filter((r) => r.id !== id))
+}
+
+// --- Padel ---
+export function getPadelSessions(): PadelSession[] {
+  return get<PadelSession[]>("padel", []).sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+  )
+}
+
+export function savePadelSession(session: PadelSession): void {
+  const sessions = getPadelSessions()
+  const idx = sessions.findIndex((s) => s.id === session.id)
+  if (idx >= 0) sessions[idx] = session
+  else sessions.unshift(session)
+  set("padel", sessions)
+}
+
+export function deletePadelSession(id: string): void {
+  set("padel", getPadelSessions().filter((s) => s.id !== id))
 }
 
 // --- Gear ---
@@ -166,4 +185,36 @@ export function exportAllData(): string {
     runs: getRuns(), gear: getGear(), goals: getGoals(),
     profile: getProfile(), exportedAt: new Date().toISOString(),
   }, null, 2)
+}
+
+// --- Import ---
+export function importAllData(jsonString: string): { success: boolean; message: string } {
+  if (typeof window === "undefined") {
+    return { success: false, message: "Import non disponible côté serveur" }
+  }
+
+  try {
+    const data = JSON.parse(jsonString)
+
+    // Validation basique
+    if (!data.runs || !Array.isArray(data.runs)) {
+      return { success: false, message: "Format JSON invalide : 'runs' manquant ou invalide" }
+    }
+
+    const profile = getActiveProfile()
+
+    // Importer les données
+    if (Array.isArray(data.runs)) set("runs", data.runs)
+    if (Array.isArray(data.gear)) set("gear", data.gear)
+    if (Array.isArray(data.goals)) set("goals", data.goals)
+    if (data.profile && typeof data.profile === "object") set("userprofile", data.profile)
+
+    return {
+      success: true,
+      message: `✅ Importation réussie ! ${data.runs.length} sorties restaurées.`,
+    }
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : "Erreur inconnue"
+    return { success: false, message: `Erreur d'importation : ${msg}` }
+  }
 }
