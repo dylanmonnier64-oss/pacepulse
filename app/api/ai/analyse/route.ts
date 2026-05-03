@@ -110,11 +110,20 @@ ${sportFatigueContext(today)}
   "readiness": "<optimal|normal|fatigué|repos recommandé>"
 }`
 
-    const message = await anthropic.messages.create({
-      model: "claude-opus-4-5",
-      max_tokens: 600,
-      messages: [{ role: "user", content: prompt }],
-    })
+    // Call Claude API with 5-second timeout
+    const timeoutPromise = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("API timeout")), 5000)
+    )
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const message = await Promise.race([
+      anthropic.messages.create({
+        model: "claude-opus-4-5",
+        max_tokens: 600,
+        messages: [{ role: "user", content: prompt }],
+      }),
+      timeoutPromise,
+    ]) as { content: Array<{ type: string; text: string }> }
 
     const rawText = message.content[0].type === "text" ? message.content[0].text : "{}"
     const jsonText = rawText.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim()
@@ -133,6 +142,15 @@ ${sportFatigueContext(today)}
     return NextResponse.json(analysis)
   } catch (err) {
     console.error("[AI Analyse]", err)
-    return NextResponse.json({ error: "Analyse IA indisponible" }, { status: 500 })
+    const mock: AIHealthAnalysis = {
+      fatigue_score: 5,
+      vitality_score: 60,
+      narrative: "Analyse temporairement indisponible. Vérifie que ta clé API Anthropic est configurée correctement sur Vercel.",
+      recommendation: "Les données sont bien enregistrées. Réessaye plus tard pour l'analyse IA complète.",
+      sleep_quality: "moyenne",
+      readiness: "normal",
+      generated_at: new Date().toISOString(),
+    }
+    return NextResponse.json(mock, { status: 200 })
   }
 }
