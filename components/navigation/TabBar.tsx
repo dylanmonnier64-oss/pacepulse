@@ -27,7 +27,6 @@ const LEFT_TABS = [
   { href: "/activites", label: "Activités", Icon: Activity },
 ]
 const RIGHT_TABS = [
-  { href: "/elite",    label: "Santé",    Icon: Heart },
   { href: "/soulmate", label: "Soulmate", Icon: Users },
 ]
 const tabs = [...LEFT_TABS, ...RIGHT_TABS]
@@ -45,7 +44,6 @@ type FabAction = {
 const FAB_ACTIONS: FabAction[] = [
   { id: "checkin",   emoji: "🧠", label: "Check-in rapide",    sub: "Humeur + Forme du jour",    color: "rgba(212,175,55,0.08)",  border: "rgba(212,175,55,0.22)" },
   { id: "bobos",     emoji: "🩺", label: "Journal des Bobos",  sub: "Douleurs & blessures",      color: "rgba(239,68,68,0.08)",   border: "rgba(239,68,68,0.22)"  },
-  { id: "run",       href: "/runs/new",            emoji: "🏃", label: "Ajouter un run",        sub: "Course à pied",             color: "rgba(34,197,94,0.08)",   border: "rgba(34,197,94,0.22)"  },
   { id: "padel",     href: "/activites?new=padel", emoji: "🎾", label: "Match de padel",        sub: "Enregistrer une partie",    color: "rgba(168,85,247,0.08)",  border: "rgba(168,85,247,0.22)" },
   { id: "forecasts", href: "/forecasts",           emoji: "🔮", label: "Prévisions",            sub: "Temps prédits & VDOT",      color: "rgba(99,102,241,0.08)",  border: "rgba(99,102,241,0.22)" },
   { id: "races",     href: "/races",               emoji: "🏁", label: "Courses",               sub: "Marathons & trails région", color: "rgba(34,197,94,0.08)",   border: "rgba(34,197,94,0.22)"  },
