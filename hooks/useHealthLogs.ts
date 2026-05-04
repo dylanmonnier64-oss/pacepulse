@@ -7,7 +7,10 @@ import { applySeedIfNeeded } from "@/lib/health-seed"
 
 const SUPABASE_ENABLED = !!(
   process.env.NEXT_PUBLIC_SUPABASE_URL &&
-  process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://YOUR_PROJECT.supabase.co"
+  process.env.NEXT_PUBLIC_SUPABASE_URL !== "https://YOUR_PROJECT.supabase.co" &&
+  !process.env.NEXT_PUBLIC_SUPABASE_URL.includes("placeholder") &&
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY &&
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY !== "placeholder_key"
 )
 
 // ── localStorage fallback key ──
