@@ -27,6 +27,7 @@ const LEFT_TABS = [
   { href: "/activites", label: "Activités", Icon: Activity },
 ]
 const RIGHT_TABS = [
+  { href: "/elite",    label: "Santé",    Icon: Heart },
   { href: "/soulmate", label: "Soulmate", Icon: Users },
 ]
 const tabs = [...LEFT_TABS, ...RIGHT_TABS]
