@@ -2,29 +2,26 @@
 import { useState, useEffect, useCallback, Suspense } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useSearchParams, useRouter } from "next/navigation"
-import { Clock, ChevronRight, Pencil, Trophy, Trash2, Filter, Search } from "lucide-react"
+import { Clock, ChevronRight, Pencil, Trophy, Trash2, Search, Plus } from "lucide-react"
 import { useRuns } from "@/hooks/useRuns"
 import { usePadelSessions } from "@/hooks/usePadelSessions"
 import RunCard from "@/components/runs/RunCard"
-import { hapticFeedback, formatDurationShort } from "@/lib/utils"
-import { formatDateShort } from "@/lib/utils"
+import { hapticFeedback, lgStyle, formatDateShort } from "@/lib/utils"
 import type { Run, PadelSession } from "@/lib/types"
 
 /* ── Types ── */
 type ActiveFilter = "tout" | "runs" | "padel"
-type ActivityItem =
-  | { kind: "run";   data: Run }
-  | { kind: "padel"; data: PadelSession }
+type ActivityItem = { kind: "run"; data: Run } | { kind: "padel"; data: PadelSession }
+
+/* Couleur padel : violet pour victoire, rouge pour défaite */
+const PADEL_WIN_COLOR  = "#A855F7"
+const PADEL_LOSE_COLOR = "#EF4444"
 
 /* ── Helpers ── */
-function getItemDate(item: ActivityItem): string {
-  return item.data.date
-}
-
 function groupByDate(items: ActivityItem[]): [string, ActivityItem[]][] {
   const map = new Map<string, ActivityItem[]>()
   items.forEach(item => {
-    const d = getItemDate(item).split("T")[0]
+    const d = item.data.date.split("T")[0]
     if (!map.has(d)) map.set(d, [])
     map.get(d)!.push(item)
   })
@@ -40,10 +37,16 @@ function formatGroupDate(dateStr: string): string {
   return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })
 }
 
-/* ── Padel Card (style identique à RunCard) ── */
-function PadelCard({ session, onEdit, index = 0 }: { session: PadelSession; onEdit: (s: PadelSession) => void; index?: number }) {
-  const isWin = session.result === "victoire"
-  const color = isWin ? "#22C55E" : "#EF4444"
+/* ══════════════════════════════════════════════════
+   PADEL CARD — même structure exacte que RunCard
+══════════════════════════════════════════════════ */
+function PadelCard({ session, onEdit, index = 0 }: {
+  session: PadelSession
+  onEdit: (s: PadelSession) => void
+  index?: number
+}) {
+  const isWin  = session.result === "victoire"
+  const color  = isWin ? PADEL_WIN_COLOR : PADEL_LOSE_COLOR
 
   return (
     <motion.div
@@ -51,21 +54,22 @@ function PadelCard({ session, onEdit, index = 0 }: { session: PadelSession; onEd
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.045, duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -3, boxShadow: `0 14px 40px rgba(0,0,0,0.4), 0 0 0 1px ${color}28` }}
+      onClick={() => { hapticFeedback(); onEdit(session) }}
+      className="cursor-pointer"
     >
       <div
         className="relative rounded-[22px] overflow-hidden touch-feedback"
         style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)" }}
-        onClick={() => { hapticFeedback(); onEdit(session) }}
       >
-        {/* Left gradient accent */}
+        {/* Barre gauche colorée — identique RunCard */}
         <div className="absolute left-0 top-0 bottom-0 w-[3px]"
           style={{ background: `linear-gradient(180deg, ${color}, ${color}44)`, borderRadius: "3px 0 0 3px" }} />
-        {/* Left color wash */}
+        {/* Wash gauche */}
         <div className="absolute left-0 top-0 bottom-0 w-24 pointer-events-none"
           style={{ background: `linear-gradient(90deg, ${color}10 0%, transparent 100%)` }} />
 
         <div className="pl-3 pr-4 py-4">
-          {/* Top row */}
+          {/* Ligne du haut */}
           <div className="flex items-start justify-between mb-3">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center gap-2">
@@ -73,9 +77,15 @@ function PadelCard({ session, onEdit, index = 0 }: { session: PadelSession; onEd
                   style={{ background: `${color}18`, color, border: `1px solid ${color}38` }}>
                   {isWin ? "Victoire" : "Défaite"}
                 </span>
+                {isWin && (
+                  <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full"
+                    style={{ background: "rgba(244,208,63,0.9)", color: "#050505" }}>
+                    🏆
+                  </span>
+                )}
                 {session.partner && (
                   <span className="text-[10px]" style={{ color: "rgba(250,250,250,0.4)" }}>
-                    👥 {session.partner}
+                    · 👥 {session.partner}
                   </span>
                 )}
               </div>
@@ -84,10 +94,10 @@ function PadelCard({ session, onEdit, index = 0 }: { session: PadelSession; onEd
               </p>
             </div>
 
-            {/* Right actions */}
+            {/* Boutons droite */}
             <div className="flex items-center gap-2">
               <button
-                onClick={(e) => { e.stopPropagation(); hapticFeedback(); onEdit(session) }}
+                onClick={e => { e.stopPropagation(); hapticFeedback(); onEdit(session) }}
                 className="w-7 h-7 rounded-xl flex items-center justify-center touch-feedback"
                 style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.1)" }}>
                 <Pencil size={12} style={{ color: "rgba(250,250,250,0.45)" }} />
@@ -96,11 +106,12 @@ function PadelCard({ session, onEdit, index = 0 }: { session: PadelSession; onEd
             </div>
           </div>
 
-          {/* Main stats row */}
+          {/* Stats principales */}
           <div className="flex items-end gap-5">
-            {/* Rating — prominent */}
+            {/* Rating — mis en avant comme la distance */}
             <div>
-              <span className="data-mono text-[28px] font-black tracking-tight leading-none" style={{ color: "#FAFAFA" }}>
+              <span className="data-mono text-[28px] font-black tracking-tight leading-none"
+                style={{ color: "#FAFAFA" }}>
                 {session.rating}
               </span>
               <span className="text-[11px] font-semibold ml-1" style={{ color: "rgba(250,250,250,0.38)" }}>
@@ -108,7 +119,7 @@ function PadelCard({ session, onEdit, index = 0 }: { session: PadelSession; onEd
               </span>
             </div>
 
-            {/* Secondary stats */}
+            {/* Stats secondaires */}
             <div className="flex items-center gap-3.5 pb-0.5 flex-1 flex-wrap">
               <div className="flex items-center gap-1">
                 <Clock size={11} style={{ color: "rgba(250,250,250,0.38)" }} />
@@ -119,15 +130,13 @@ function PadelCard({ session, onEdit, index = 0 }: { session: PadelSession; onEd
               {isWin && (
                 <div className="flex items-center gap-1">
                   <Trophy size={11} style={{ color: "#F4D03F" }} />
-                  <span className="data-mono text-[13px] font-bold" style={{ color: "#F4D03F" }}>
-                    Win
-                  </span>
+                  <span className="data-mono text-[13px] font-bold" style={{ color: "#F4D03F" }}>Win</span>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Feeling / Rating bar */}
+          {/* Barre feeling — identique RunCard */}
           <div className="mt-3 flex items-center gap-2">
             <div className="h-1 rounded-full overflow-hidden flex-1"
               style={{ background: "rgba(255,255,255,0.07)" }}>
@@ -154,7 +163,9 @@ function PadelCard({ session, onEdit, index = 0 }: { session: PadelSession; onEd
   )
 }
 
-/* ── Padel Modal (Create/Edit) ── */
+/* ══════════════════════════════════════════════════
+   PADEL MODAL (Créer / Modifier)
+══════════════════════════════════════════════════ */
 function PadelModal({ onClose, editingSession, onSave, onDelete }: {
   onClose: () => void
   editingSession?: PadelSession
@@ -163,23 +174,19 @@ function PadelModal({ onClose, editingSession, onSave, onDelete }: {
 }) {
   const isEditing = !!editingSession
   const [form, setForm] = useState({
-    date: editingSession?.date ?? new Date().toISOString().split("T")[0],
+    date:     editingSession?.date     ?? new Date().toISOString().split("T")[0],
     duration: String(editingSession?.duration ?? 60),
-    result: (editingSession?.result ?? "victoire") as "victoire" | "défaite",
-    rating: String(editingSession?.rating ?? 7),
-    comment: editingSession?.comment ?? "",
-    partner: editingSession?.partner ?? "",
+    result:   (editingSession?.result  ?? "victoire") as "victoire" | "défaite",
+    rating:   String(editingSession?.rating   ?? 7),
+    comment:  editingSession?.comment  ?? "",
+    partner:  editingSession?.partner  ?? "",
   })
 
   function submit() {
     onSave({
-      date: form.date,
-      duration: Number(form.duration),
-      result: form.result,
-      rating: Number(form.rating),
-      comment: form.comment,
-      partner: form.partner || undefined,
-      source: "manual",
+      date: form.date, duration: Number(form.duration), result: form.result,
+      rating: Number(form.rating), comment: form.comment,
+      partner: form.partner || undefined, source: "manual",
     })
     onClose()
   }
@@ -187,7 +194,8 @@ function PadelModal({ onClose, editingSession, onSave, onDelete }: {
   return (
     <motion.div className="fixed inset-0 z-50 flex items-end"
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-      <div className="absolute inset-0" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(10px)" }}
+      <div className="absolute inset-0"
+        style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(10px)" }}
         onClick={onClose} />
       <motion.div className="relative w-full rounded-t-[32px] overflow-hidden"
         initial={{ y: "100%" }} animate={{ y: 0 }} exit={{ y: "100%" }}
@@ -198,14 +206,15 @@ function PadelModal({ onClose, editingSession, onSave, onDelete }: {
         </div>
         <div className="px-5 pt-2 pb-10 space-y-4">
           <h2 className="text-[18px] font-black" style={{ color: "#FAFAFA" }}>
-            {isEditing ? "Modifier le match" : "Nouveau match"} <span style={{ color: "#A855F7" }}>🎾</span>
+            {isEditing ? "Modifier le match" : "Nouveau match"}{" "}
+            <span style={{ color: PADEL_WIN_COLOR }}>🎾</span>
           </h2>
-          {([
-            { label: "Date", type: "date", key: "date" },
-            { label: "Durée (min)", type: "number", key: "duration" },
-            { label: "Note /10", type: "number", key: "rating" },
-            { label: "Partenaire", type: "text", key: "partner" },
-            { label: "Commentaire", type: "text", key: "comment" },
+
+          {([ { label: "Date", type: "date", key: "date" },
+              { label: "Durée (min)", type: "number", key: "duration" },
+              { label: "Note /10", type: "number", key: "rating" },
+              { label: "Partenaire", type: "text", key: "partner" },
+              { label: "Commentaire", type: "text", key: "comment" },
           ] as { label: string; type: string; key: string }[]).map(({ label, type, key }) => (
             <div key={key}>
               <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-1.5"
@@ -216,37 +225,43 @@ function PadelModal({ onClose, editingSession, onSave, onDelete }: {
                 style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "#FAFAFA" }} />
             </div>
           ))}
+
           <div>
             <p className="text-[10px] font-bold uppercase tracking-[0.14em] mb-1.5"
               style={{ color: "rgba(250,250,250,0.4)" }}>Résultat</p>
             <div className="grid grid-cols-2 gap-2">
-              {(["victoire", "défaite"] as const).map(r => (
-                <motion.button key={r} whileTap={{ scale: 0.95 }}
-                  onClick={() => setForm(f => ({ ...f, result: r }))}
-                  className="py-3 rounded-[14px] font-bold text-sm capitalize touch-feedback"
-                  style={{
-                    background: form.result === r ? (r === "victoire" ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)") : "rgba(255,255,255,0.04)",
-                    border: `1px solid ${form.result === r ? (r === "victoire" ? "rgba(34,197,94,0.35)" : "rgba(239,68,68,0.35)") : "rgba(255,255,255,0.08)"}`,
-                    color: form.result === r ? (r === "victoire" ? "#22C55E" : "#EF4444") : "rgba(250,250,250,0.45)",
-                  }}>
-                  {r === "victoire" ? "🏆 Victoire" : "💪 Défaite"}
-                </motion.button>
-              ))}
+              {(["victoire", "défaite"] as const).map(r => {
+                const c = r === "victoire" ? PADEL_WIN_COLOR : PADEL_LOSE_COLOR
+                const active = form.result === r
+                return (
+                  <motion.button key={r} whileTap={{ scale: 0.95 }}
+                    onClick={() => setForm(f => ({ ...f, result: r }))}
+                    className="py-3 rounded-[14px] font-bold text-sm capitalize touch-feedback"
+                    style={{
+                      background: active ? `${c}18` : "rgba(255,255,255,0.04)",
+                      border: `1px solid ${active ? `${c}45` : "rgba(255,255,255,0.08)"}`,
+                      color: active ? c : "rgba(250,250,250,0.45)",
+                    }}>
+                    {r === "victoire" ? "🏆 Victoire" : "💪 Défaite"}
+                  </motion.button>
+                )
+              })}
             </div>
           </div>
+
           {isEditing && onDelete && (
             <motion.button whileTap={{ scale: 0.97 }}
               onClick={() => { hapticFeedback(); onDelete(editingSession!.id); onClose() }}
               className="w-full py-3 rounded-[16px] font-bold text-sm flex items-center justify-center gap-2 touch-feedback"
               style={{ background: "rgba(239,68,68,0.12)", border: "1px solid rgba(239,68,68,0.25)", color: "#EF4444" }}>
-              <Trash2 size={14} />
-              Supprimer
+              <Trash2 size={14} /> Supprimer
             </motion.button>
           )}
+
           <motion.button whileTap={{ scale: 0.97 }}
             onClick={() => { hapticFeedback(); submit() }}
             className="w-full py-3.5 rounded-[18px] font-bold text-sm touch-feedback"
-            style={{ background: "rgba(168,85,247,0.15)", border: "1px solid rgba(168,85,247,0.3)", color: "#A855F7" }}>
+            style={{ background: `${PADEL_WIN_COLOR}22`, border: `1px solid ${PADEL_WIN_COLOR}45`, color: PADEL_WIN_COLOR }}>
             {isEditing ? "Modifier" : "Enregistrer"}
           </motion.button>
         </div>
@@ -255,12 +270,9 @@ function PadelModal({ onClose, editingSession, onSave, onDelete }: {
   )
 }
 
-/* ═══════════════════════════════════════════════
-   PAGE
-═══════════════════════════════════════════════ */
-const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.05 } } }
-const fadeUp  = { hidden: { opacity: 0, y: 10 }, show: { opacity: 1, y: 0, transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] } } }
-
+/* ══════════════════════════════════════════════════
+   PAGE ACTIVITÉS
+══════════════════════════════════════════════════ */
 function ActivitesContent() {
   const { runs, loading: runsLoading } = useRuns()
   const { sessions, loading: padelLoading, addSession, updateSession, removeSession } = usePadelSessions()
@@ -268,22 +280,22 @@ function ActivitesContent() {
   const [search, setSearch] = useState("")
   const searchParams = useSearchParams()
   const router = useRouter()
-  const [showPadelModal, setShowPadelModal] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const [editingSession, setEditingSession] = useState<PadelSession | undefined>()
 
   useEffect(() => {
-    if (searchParams.get("new") === "padel") setShowPadelModal(true)
+    if (searchParams.get("new") === "padel") setShowModal(true)
   }, [searchParams])
 
   const handleClose = useCallback(() => {
-    setShowPadelModal(false)
+    setShowModal(false)
     setEditingSession(undefined)
     router.replace("/activites")
   }, [router])
 
   const handleEditSession = useCallback((session: PadelSession) => {
     setEditingSession(session)
-    setShowPadelModal(true)
+    setShowModal(true)
   }, [])
 
   const handleSave = useCallback((data: Omit<PadelSession, "id" | "user_profile" | "created_at">) => {
@@ -294,91 +306,95 @@ function ActivitesContent() {
 
   const loading = runsLoading || padelLoading
 
-  // Stats
-  const totalKm = runs.reduce((s, r) => s + r.distance, 0)
-  const totalElev = runs.reduce((s, r) => s + r.elevation, 0)
-  const totalActivities = runs.length + sessions.length
+  /* Statistiques */
+  const totalKm    = runs.reduce((s, r) => s + r.distance, 0)
+  const totalElev  = runs.reduce((s, r) => s + r.elevation, 0)
+  const totalItems = runs.length + sessions.length
 
-  // Build combined list
+  /* Liste filtrée + recherche */
   const allItems: ActivityItem[] = [
-    ...(activeFilter !== "padel" ? runs.map(r => ({ kind: "run" as const, data: r })) : []),
-    ...(activeFilter !== "runs" ? sessions.map(s => ({ kind: "padel" as const, data: s })) : []),
+    ...(activeFilter !== "padel" ? runs.map(r => ({ kind: "run"   as const, data: r })) : []),
+    ...(activeFilter !== "runs"  ? sessions.map(s => ({ kind: "padel" as const, data: s })) : []),
   ].filter(item => {
     if (!search) return true
-    if (item.kind === "run") return item.data.distance.toString().includes(search) || (item.data.notes ?? "").toLowerCase().includes(search.toLowerCase())
-    return item.data.comment?.toLowerCase().includes(search.toLowerCase()) || item.data.partner?.toLowerCase().includes(search.toLowerCase())
-  }).sort((a, b) => getItemDate(b).localeCompare(getItemDate(a)))
+    if (item.kind === "run")
+      return item.data.distance.toString().includes(search) ||
+             (item.data.notes ?? "").toLowerCase().includes(search.toLowerCase())
+    return (item.data.comment  ?? "").toLowerCase().includes(search.toLowerCase()) ||
+           (item.data.partner  ?? "").toLowerCase().includes(search.toLowerCase())
+  }).sort((a, b) => a.data.date < b.data.date ? 1 : -1)
 
   const grouped = groupByDate(allItems)
 
   return (
     <>
-      <motion.div className="flex flex-col gap-4" variants={stagger} initial="hidden" animate="show">
+      <motion.div className="flex flex-col gap-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
 
         {/* ── Header ── */}
-        <motion.div variants={fadeUp}>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.16em]"
-            style={{ color: "rgba(250,250,250,0.38)" }}>Journal</p>
-          <h1 className="text-[26px] font-black tracking-tight" style={{ color: "#FAFAFA" }}>
-            Activités<span style={{ color: "#F4D03F" }}>.</span>
-          </h1>
-        </motion.div>
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em]"
+              style={{ color: "rgba(250,250,250,0.38)" }}>Journal</p>
+            <h1 className="text-[26px] font-black tracking-tight" style={{ color: "#FAFAFA" }}>
+              Activités<span style={{ color: "#F4D03F" }}>.</span>
+            </h1>
+          </div>
+        </div>
 
-        {/* ── Search ── */}
-        <motion.div variants={fadeUp}
-          className="flex items-center gap-3 px-4 rounded-2xl"
-          style={{ background: "rgba(255,255,255,0.05)", height: 48, border: "1px solid rgba(255,255,255,0.10)" }}>
+        {/* ── Recherche — liquid glass comme Mes Runs ── */}
+        <div className="flex items-center gap-3 px-4 rounded-2xl"
+          style={{ ...lgStyle(), height: 48, border: "1px solid rgba(255,255,255,0.12)" }}>
           <Search size={16} style={{ color: "rgba(250,250,250,0.38)" }} />
-          <input
-            type="search" placeholder="Rechercher..."
+          <input type="search" placeholder="Rechercher..."
             value={search} onChange={e => setSearch(e.target.value)}
             className="flex-1 bg-transparent outline-none text-sm"
             style={{ color: "#FAFAFA", border: "none", padding: 0 }} />
-        </motion.div>
+        </div>
 
-        {/* ── Filters ── */}
-        <motion.div variants={fadeUp} className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+        {/* ── Filtres — liquid glass comme Mes Runs ── */}
+        <div className="flex gap-2 overflow-x-auto pb-1 no-select" style={{ scrollbarWidth: "none" }}>
           {([
             { id: "tout",  label: "Tous",  emoji: "⚡" },
             { id: "runs",  label: "Runs",  emoji: "🏃" },
             { id: "padel", label: "Padel", emoji: "🎾" },
-          ] as { id: ActiveFilter; label: string; emoji: string }[]).map(f => (
-            <motion.button key={f.id} whileTap={{ scale: 0.93 }}
-              onClick={() => { hapticFeedback(); setActiveFilter(f.id) }}
-              className="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold touch-feedback"
-              style={{
-                background: activeFilter === f.id ? "rgba(212,175,55,0.12)" : "rgba(255,255,255,0.05)",
-                border: `1px solid ${activeFilter === f.id ? "rgba(212,175,55,0.35)" : "rgba(255,255,255,0.08)"}`,
-                color: activeFilter === f.id ? "var(--gold)" : "rgba(250,250,250,0.4)",
-                transition: "all 0.15s",
-              }}>
-              <span>{f.emoji}</span>{f.label}
-            </motion.button>
-          ))}
-        </motion.div>
+          ] as { id: ActiveFilter; label: string; emoji: string }[]).map(f => {
+            const active = activeFilter === f.id
+            return (
+              <button key={f.id}
+                onClick={() => { hapticFeedback(); setActiveFilter(f.id) }}
+                className="touch-feedback flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold"
+                style={{
+                  ...(active ? lgStyle("rgba(244,208,63,0.15)") : lgStyle()),
+                  color: active ? "#F4D03F" : "rgba(250,250,250,0.60)",
+                  border: `1px solid ${active ? "rgba(244,208,63,0.35)" : "rgba(255,255,255,0.10)"}`,
+                  minHeight: 36,
+                }}>
+                <span>{f.emoji}</span>{f.label}
+              </button>
+            )
+          })}
+        </div>
 
-        {/* ── Stats Banner ── */}
+        {/* ── Stats — même style que Mes Runs ── */}
         {!loading && (
-          <motion.div variants={fadeUp}
-            className="rounded-[20px] overflow-hidden"
-            style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.07)" }}>
-            <div className="grid grid-cols-3 divide-x" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-              {[
-                { value: totalActivities, label: "SORTIES",   color: "#F4D03F", unit: "" },
-                { value: totalKm.toFixed(1), label: "KM TOTAL", color: "#3498DB", unit: "" },
-                { value: Math.round(totalElev), label: "M D+",  color: "#A855F7", unit: "" },
-              ].map(({ value, label, color }) => (
-                <div key={label} className="py-3 flex flex-col items-center gap-0.5">
-                  <span className="data-mono font-black text-[20px]" style={{ color }}>{value}</span>
-                  <span className="text-[8px] font-bold uppercase tracking-[0.14em]"
-                    style={{ color: "rgba(250,250,250,0.3)" }}>{label}</span>
-                </div>
-              ))}
-            </div>
-          </motion.div>
+          <div className="rounded-[22px] p-3 flex items-center gap-4"
+            style={lgStyle("rgba(255,255,255,0.03)")}>
+            {[
+              { value: String(totalItems),          label: "sorties" },
+              { value: totalKm.toFixed(0),          label: "km total" },
+              { value: String(Math.round(totalElev)), label: "m D+" },
+            ].map(({ value, label }, i) => (
+              <div key={label} className={`text-center flex-1 ${i === 1 ? "border-x" : ""}`}
+                style={{ borderColor: "rgba(255,255,255,0.07)" }}>
+                <p className="text-lg font-extrabold" style={{ color: "#FAFAFA" }}>{value}</p>
+                <p className="text-[9px] uppercase tracking-wide"
+                  style={{ color: "rgba(250,250,250,0.38)" }}>{label}</p>
+              </div>
+            ))}
+          </div>
         )}
 
-        {/* ── List ── */}
+        {/* ── Liste ── */}
         {loading ? (
           <div className="flex flex-col gap-3">
             {[...Array(4)].map((_, i) => (
@@ -387,37 +403,42 @@ function ActivitesContent() {
             ))}
           </div>
         ) : grouped.length === 0 ? (
-          <motion.div variants={fadeUp}
-            className="flex flex-col items-center gap-3 py-16 rounded-[24px]"
-            style={{ background: "rgba(255,255,255,0.02)", border: "2px dashed rgba(255,255,255,0.07)" }}>
+          <div className="text-center py-16" role="status">
             <span className="text-4xl">📋</span>
-            <p className="font-black" style={{ color: "#FAFAFA" }}>Aucune activité</p>
-            <p className="text-[12px]" style={{ color: "rgba(250,250,250,0.35)" }}>
+            <p className="mt-3 font-bold" style={{ color: "#FAFAFA" }}>Aucune activité</p>
+            <p className="text-sm mt-1" style={{ color: "rgba(250,250,250,0.35)" }}>
               Utilise le bouton <span style={{ color: "var(--gold)" }}>+</span> pour enregistrer
             </p>
-          </motion.div>
+          </div>
         ) : (
-          grouped.map(([date, items]) => (
-            <motion.div key={date} variants={fadeUp} className="flex flex-col gap-2">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] px-1 capitalize"
-                style={{ color: "rgba(250,250,250,0.32)" }}>
-                {formatGroupDate(date)}
-              </p>
-              {items.map((item, i) => (
-                item.kind === "run"
-                  ? <RunCard key={item.data.id} run={item.data} index={i} />
-                  : <PadelCard key={item.data.id} session={item.data} index={i} onEdit={handleEditSession} />
-              ))}
-            </motion.div>
-          ))
+          <ol className="flex flex-col gap-3">
+            {grouped.map(([date, items]) => (
+              <li key={date}>
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] px-1 mb-2 capitalize"
+                  style={{ color: "rgba(250,250,250,0.32)" }}>
+                  {formatGroupDate(date)}
+                </p>
+                <ol className="flex flex-col gap-3">
+                  {items.map((item, i) => (
+                    <li key={item.data.id}>
+                      {item.kind === "run"
+                        ? <RunCard run={item.data} index={i} />
+                        : <PadelCard session={item.data} index={i} onEdit={handleEditSession} />
+                      }
+                    </li>
+                  ))}
+                </ol>
+              </li>
+            ))}
+          </ol>
         )}
 
         <div className="h-6" />
       </motion.div>
 
-      {/* ── Padel Modal ── */}
+      {/* ── Modal Padel ── */}
       <AnimatePresence>
-        {showPadelModal && (
+        {showModal && (
           <PadelModal
             onClose={handleClose}
             editingSession={editingSession}

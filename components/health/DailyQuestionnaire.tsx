@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import { X, ChevronLeft, ChevronRight, Sparkles } from "lucide-react"
 import type { HealthFormState, HealthLog } from "@/lib/types"
 import { lgStyle } from "@/lib/utils"
+import { useHealthData } from "@/hooks/useHealthData"
 
 interface DailyQuestionnaireProps {
   open: boolean
@@ -35,18 +36,20 @@ const sheetStyle: React.CSSProperties = {
   boxShadow: "0 -8px 40px rgba(0,0,0,0.6), inset 0 1px 0 rgba(212,175,55,0.08)",
 }
 
-const numInputStyle: React.CSSProperties = {
-  background: "rgba(255,255,255,0.04)",
-  border: "1px solid rgba(255,255,255,0.08)",
-  borderRadius: 16,
-  color: "#FAFAFA",
-  fontFamily: "JetBrains Mono, monospace",
-  fontSize: 36,
-  fontWeight: 800,
-  textAlign: "center",
-  width: "100%",
-  padding: "18px",
-  outline: "none",
+function numInputStyle(extra?: React.CSSProperties): React.CSSProperties {
+  return {
+    ...lgStyle("rgba(255,255,255,0.07)"),
+    borderRadius: 16,
+    color: "#FAFAFA",
+    fontFamily: "JetBrains Mono, monospace",
+    fontSize: 36,
+    fontWeight: 800,
+    textAlign: "center",
+    width: "100%",
+    padding: "18px",
+    outline: "none",
+    ...extra,
+  }
 }
 
 const sliderStyle: React.CSSProperties = { width: "100%", accentColor: "var(--gold)" }
@@ -134,9 +137,14 @@ export default function DailyQuestionnaire({ open, onClose, onSave, existingData
   const [sleepHours, setSleepHours] = useState("7")
   const [sleepMinutes, setSleepMinutes] = useState("0")
   const [sportType, setSportType] = useState<"running" | "padel" | null>(null)
+  const [watchPrefilled, setWatchPrefilled] = useState(false)
+
+  // Données de la montre
+  const { merged, hasDevices } = useHealthData()
 
   useEffect(() => {
     if (existingData) {
+      // Données existantes en priorité
       setSteps(String(existingData.steps ?? 0))
       setCalories(String(existingData.calories ?? 0))
       setActiveMinutes(String(existingData.active_minutes ?? 0))
@@ -145,6 +153,20 @@ export default function DailyQuestionnaire({ open, onClose, onSave, existingData
       setSleepHours(String(existingData.sleep_hours ?? 7))
       setSleepMinutes(String(existingData.sleep_minutes ?? 0))
       setSportType(existingData.sport_type ?? null)
+      setWatchPrefilled(false)
+    } else if (hasDevices && merged) {
+      // Pré-remplir depuis la montre si pas de données existantes
+      if (merged.steps)                 setSteps(String(merged.steps))
+      if (merged.calories)              setCalories(String(Math.round(merged.calories)))
+      if (merged.heartRate?.resting)    setHr(String(merged.heartRate.resting))
+      if (merged.sleepHours !== undefined) {
+        setSleepHours(String(merged.sleepHours))
+        // Arrondir les minutes au 15 le plus proche
+        const rawMin = merged.sleepMinutes ?? 0
+        const roundedMin = Math.round(rawMin / 15) * 15
+        setSleepMinutes(String(Math.min(roundedMin, 45)))
+      }
+      setWatchPrefilled(true)
     } else {
       setSteps("0")
       setCalories("0")
@@ -154,8 +176,9 @@ export default function DailyQuestionnaire({ open, onClose, onSave, existingData
       setSleepHours("7")
       setSleepMinutes("0")
       setSportType(null)
+      setWatchPrefilled(false)
     }
-  }, [existingData])
+  }, [existingData, hasDevices, merged])
 
   useEffect(() => { if (open) setStep(0) }, [open])
 
@@ -220,7 +243,7 @@ export default function DailyQuestionnaire({ open, onClose, onSave, existingData
           <input
             type="number" value={steps}
             onChange={(e) => setSteps(e.target.value)}
-            min={0} style={{ ...numInputStyle, fontSize: 28 }} inputMode="numeric"
+            min={0} style={numInputStyle({ fontSize: 28 })} inputMode="numeric"
           />
           <GoalBar value={Number(steps) || 0} goal={10000} color="#F4D03F" />
         </div>
@@ -236,7 +259,7 @@ export default function DailyQuestionnaire({ open, onClose, onSave, existingData
           <input
             type="number" value={calories}
             onChange={(e) => setCalories(e.target.value)}
-            min={0} style={{ ...numInputStyle, fontSize: 28 }} inputMode="numeric"
+            min={0} style={numInputStyle({ fontSize: 28 })} inputMode="numeric"
           />
           <GoalBar value={Number(calories) || 0} goal={500} color="#FF6B1A" />
         </div>
@@ -379,7 +402,7 @@ export default function DailyQuestionnaire({ open, onClose, onSave, existingData
         <input
           type="number" value={hr}
           onChange={(e) => setHr(e.target.value)}
-          min={30} max={220} style={numInputStyle} inputMode="numeric"
+          min={30} max={220} style={numInputStyle()} inputMode="numeric"
         />
         <p className="text-center text-[11px] font-bold uppercase tracking-widest" style={{ color: "rgba(250,250,250,0.25)" }}>bpm</p>
       </div>
@@ -477,6 +500,19 @@ export default function DailyQuestionnaire({ open, onClose, onSave, existingData
                   {new Date(date + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}
                 </p>
               )}
+              {watchPrefilled && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="inline-flex items-center gap-1.5 mt-2 px-3 py-1 rounded-full"
+                  style={{ background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.25)" }}
+                >
+                  <span className="text-[10px]">⌚</span>
+                  <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: "#22C55E" }}>
+                    Pré-rempli depuis ta montre
+                  </span>
+                </motion.div>
+              )}
             </div>
 
             {/* Progress dots */}
@@ -526,8 +562,8 @@ export default function DailyQuestionnaire({ open, onClose, onSave, existingData
                 <motion.button
                   onClick={goNext}
                   whileTap={{ scale: 0.96 }}
-                  className="flex-1 flex items-center justify-center gap-2 rounded-[16px] font-black text-sm"
-                  style={{ height: 52, background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(250,250,250,0.85)" }}
+                  className="flex-1 flex items-center justify-center gap-2 rounded-[16px] font-black text-sm touch-feedback"
+                  style={{ ...lgStyle(), height: 52, color: "rgba(250,250,250,0.9)" }}
                 >
                   Suivant <ChevronRight size={16} />
                 </motion.button>

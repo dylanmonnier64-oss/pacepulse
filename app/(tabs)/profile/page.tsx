@@ -20,6 +20,7 @@ import type { StravaTokens } from "@/lib/storage"
 import { formatDate, secondsToRaceTime, formatPace, formatDistance, hapticFeedback, lgStyle } from "@/lib/utils"
 import GlassCard from "@/components/ui/GlassCard"
 import Button from "@/components/ui/Button"
+import GoogleFitCard from "@/components/profile/GoogleFitCard"
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID
 
@@ -558,6 +559,22 @@ function ProfilePageInner() {
 
         <p className="text-[10px] text-text-muted mt-2 text-center">
           Chaque profil se connecte à son propre compte Strava indépendamment.
+        </p>
+      </div>
+
+      {/* ── Section Google Fit ── */}
+      <div>
+        <div className="flex items-center gap-2 mb-3">
+          <span className="text-lg">🏃</span>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-text-muted">Santé & fitness</p>
+          <span className="text-[9px] px-2 py-0.5 rounded-full font-bold"
+            style={{ background: "rgba(66,133,244,0.15)", color: "#4285F4" }}>
+            Google Fit
+          </span>
+        </div>
+        <GoogleFitCard />
+        <p className="text-[10px] text-text-muted mt-2 text-center">
+          Synchronise tes données de pas, distance, sommeil et activités.
         </p>
       </div>
 

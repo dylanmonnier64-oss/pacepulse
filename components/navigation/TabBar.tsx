@@ -47,6 +47,8 @@ const FAB_ACTIONS: FabAction[] = [
   { id: "bobos",     emoji: "🩺", label: "Journal des Bobos",  sub: "Douleurs & blessures",      color: "rgba(239,68,68,0.08)",   border: "rgba(239,68,68,0.22)"  },
   { id: "run",       href: "/runs/new",            emoji: "🏃", label: "Ajouter un run",        sub: "Course à pied",             color: "rgba(34,197,94,0.08)",   border: "rgba(34,197,94,0.22)"  },
   { id: "padel",     href: "/activites?new=padel", emoji: "🎾", label: "Match de padel",        sub: "Enregistrer une partie",    color: "rgba(168,85,247,0.08)",  border: "rgba(168,85,247,0.22)" },
+  { id: "forecasts", href: "/forecasts",           emoji: "🔮", label: "Prévisions",            sub: "Temps prédits & VDOT",      color: "rgba(99,102,241,0.08)",  border: "rgba(99,102,241,0.22)" },
+  { id: "races",     href: "/races",               emoji: "🏁", label: "Courses",               sub: "Marathons & trails région", color: "rgba(34,197,94,0.08)",   border: "rgba(34,197,94,0.22)"  },
   { id: "profile",   href: "/profile",             emoji: "⚙️", label: "Mon profil",           sub: "Paramètres & données",      color: "rgba(148,113,247,0.08)", border: "rgba(148,113,247,0.22)" },
   { id: "nutrition", emoji: "📸", label: "Scan nutrition",     sub: "Analyser un repas",         color: "rgba(59,130,246,0.08)",  border: "rgba(59,130,246,0.22)" },
 ]
@@ -843,7 +845,7 @@ export default function TabBar() {
             })}
 
             {/* Center gap for FAB */}
-            <div style={{ width: 50, flexShrink: 0 }} />
+            <div style={{ width: 72, flexShrink: 0 }} />
 
             {/* Right 2 tabs */}
             {RIGHT_TABS.map(({ href, label, Icon }, i) => {

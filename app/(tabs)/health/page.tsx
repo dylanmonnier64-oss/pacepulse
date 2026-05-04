@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { Bell, BellOff, BookOpen, Heart, Footprints, Moon, Zap, Flame, Timer } from "lucide-react"
 import { useHealthLogs } from "@/hooks/useHealthLogs"
 import { usePushNotifications } from "@/hooks/usePushNotifications"
+import { useHealthDevices } from "@/hooks/useHealthData"
 import FatigueRing from "@/components/health/FatigueRing"
 import AIInsightCard from "@/components/health/AIInsightCard"
 import HealthMetricCard from "@/components/health/HealthMetricCard"
@@ -48,6 +49,7 @@ function formatSleep(hours?: number, minutes?: number): string {
 export default function HealthPage() {
   const { logs, todayLog, loading, saveLog, updateAnalysis } = useHealthLogs()
   const { status: pushStatus, requestPermission } = usePushNotifications()
+  const { devices, merged, hasDevices } = useHealthDevices()
   const [showQuestionnaire, setShowQuestionnaire] = useState(false)
   const [analyzing, setAnalyzing] = useState(false)
 
@@ -151,6 +153,61 @@ export default function HealthPage() {
       {/* ── Vitality Ring ── */}
       <SectionLabel gold>Indice de vitalité</SectionLabel>
       <FatigueRing vitalityScore={vitalityScore} fatigueScore={fatigueScore} readiness={readiness} size={160} />
+
+      {/* ── Connected Devices ── */}
+      <SectionLabel>{hasDevices ? "⌚️ Appareils connectés" : "⌚️ Appareils"}</SectionLabel>
+      {hasDevices ? (
+        <div className="grid grid-cols-2 gap-3">
+          {Object.values(devices).map((device) => (
+            <motion.div
+              key={device.id}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="rounded-2xl p-4"
+              style={{
+                background: "linear-gradient(135deg, rgba(168,85,247,0.08) 0%, rgba(168,85,247,0.02) 100%)",
+                border: "1px solid rgba(168,85,247,0.15)",
+              }}
+            >
+              <p className="text-[11px] font-bold mb-2" style={{ color: "#FAFAFA" }}>{device.name}</p>
+              <div className="flex flex-col gap-1.5">
+                {device.data.steps && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px]" style={{ color: "rgba(250,250,250,0.4)" }}>Pas</span>
+                    <span className="text-[12px] font-bold data-mono" style={{ color: "#F4D03F" }}>
+                      {device.data.steps.toLocaleString("fr-FR")}
+                    </span>
+                  </div>
+                )}
+                {device.data.heartRate?.current && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px]" style={{ color: "rgba(250,250,250,0.4)" }}>FC</span>
+                    <span className="text-[12px] font-bold data-mono" style={{ color: "#EF4444" }}>
+                      {device.data.heartRate.current} bpm
+                    </span>
+                  </div>
+                )}
+                {device.data.heartRate?.resting && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px]" style={{ color: "rgba(250,250,250,0.4)" }}>Repos</span>
+                    <span className="text-[12px] font-bold data-mono" style={{ color: "#22C55E" }}>
+                      {device.data.heartRate.resting} bpm
+                    </span>
+                  </div>
+                )}
+              </div>
+              <p className="text-[9px] mt-2 pt-2" style={{ color: "rgba(250,250,250,0.2)", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+                Sync : {new Date(device.lastSync).toLocaleTimeString("fr-FR")}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+      ) : (
+        <div className="rounded-2xl p-4 flex items-center gap-3" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+          <span className="text-2xl">⌚️</span>
+          <p className="text-[12px]" style={{ color: "rgba(250,250,250,0.35)" }}>En attente de synchronisation…</p>
+        </div>
+      )}
 
       {/* ── Journal button ── */}
       <motion.button
